@@ -12,6 +12,7 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/liuzl/gocc"
 	"github.com/navidrome/navidrome/log"
 )
 
@@ -35,6 +36,12 @@ type client struct {
 	hc     httpDoer
 }
 
+func (c *client) s2t(in string) (out string) {
+	s2t, _ := gocc.New("s2t")
+	out, _ = s2t.Convert(in)
+	return out
+}
+
 func (c *client) searchArtists(ctx context.Context, name string, limit int) ([]Artist, error) {
 	token, err := c.authorize(ctx)
 	if err != nil {
@@ -43,12 +50,13 @@ func (c *client) searchArtists(ctx context.Context, name string, limit int) ([]A
 
 	params := url.Values{}
 	params.Add("type", "artist")
-	params.Add("q", name)
+	params.Add("q", c.s2t(name))
 	params.Add("offset", "0")
 	params.Add("limit", strconv.Itoa(limit))
 	req, _ := http.NewRequestWithContext(ctx, "GET", apiBaseUrl+"search", nil)
 	req.URL.RawQuery = params.Encode()
 	req.Header.Add("Authorization", "Bearer "+token)
+	req.Header.Add("accept-language", "zh-CN,zh")
 
 	var results SearchResults
 	err = c.makeRequest(req, &results)

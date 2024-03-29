@@ -70,7 +70,7 @@ func (s *spotifyAgent) searchArtist(ctx context.Context, name string) (*Artist, 
 	if err != nil || len(artists) == 0 {
 		return nil, model.ErrNotFound
 	}
-	name = strings.ToLower(name)
+	name = s.client.s2t(strings.ToLower(name))
 
 	// Sort results, prioritizing artists with images, with similar names and with high popularity, in this order
 	sort.Slice(artists, func(i, j int) bool {
