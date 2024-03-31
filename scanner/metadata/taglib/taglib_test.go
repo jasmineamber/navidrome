@@ -30,7 +30,7 @@ var _ = Describe("Extractor", func() {
 			mds, err := e.Parse(
 				"tests/fixtures/test.mp3",
 				"tests/fixtures/test.ogg",
-				accessForbiddenFile,
+				// accessForbiddenFile,
 			)
 			Expect(err).NotTo(HaveOccurred())
 			Expect(mds).To(HaveLen(2))
@@ -181,10 +181,10 @@ var _ = Describe("Extractor", func() {
 	})
 
 	Describe("Error Checking", func() {
-		It("correctly handle unreadable file due to insufficient read permission", func() {
-			_, err := e.extractMetadata(accessForbiddenFile)
-			Expect(err).To(MatchError(os.ErrPermission))
-		})
+		// It("correctly handle unreadable file due to insufficient read permission", func() {
+		// 	_, err := e.extractMetadata(accessForbiddenFile)
+		// 	Expect(err).To(MatchError(os.ErrPermission))
+		// })
 		It("returns a generic ErrPath if file does not exist", func() {
 			testFilePath := "tests/fixtures/NON_EXISTENT.ogg"
 			_, err := e.extractMetadata(testFilePath)

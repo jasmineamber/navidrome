@@ -74,13 +74,13 @@ func (s *spotifyAgent) searchArtist(ctx context.Context, name string) (*Artist, 
 
 	// Sort results, prioritizing artists with images, with similar names and with high popularity, in this order
 	sort.Slice(artists, func(i, j int) bool {
-		ai := fmt.Sprintf("%-5t-%03d-%04d", len(artists[i].Images) == 0, smetrics.WagnerFischer(name, strings.ToLower(artists[i].Name), 1, 1, 2), 1000-artists[i].Popularity)
-		aj := fmt.Sprintf("%-5t-%03d-%04d", len(artists[j].Images) == 0, smetrics.WagnerFischer(name, strings.ToLower(artists[j].Name), 1, 1, 2), 1000-artists[j].Popularity)
+		ai := fmt.Sprintf("%-5t-%03d-%04d", len(artists[i].Images) == 0, smetrics.WagnerFischer(name, s.client.s2t(strings.ToLower(artists[i].Name)), 1, 1, 2), 1000-artists[i].Popularity)
+		aj := fmt.Sprintf("%-5t-%03d-%04d", len(artists[j].Images) == 0, smetrics.WagnerFischer(name, s.client.s2t(strings.ToLower(artists[j].Name)), 1, 1, 2), 1000-artists[j].Popularity)
 		return ai < aj
 	})
 
 	// If the first one has the same name, that's the one
-	if strings.ToLower(artists[0].Name) != name {
+	if s.client.s2t(strings.ToLower(artists[0].Name)) != name {
 		return nil, model.ErrNotFound
 	}
 	return &artists[0], err
